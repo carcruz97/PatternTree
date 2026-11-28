@@ -1,1 +1,29 @@
-holi
+cd detector
+ go get github.com/smacker/go-tree-sitter@latest
+ go mod tidy
+ go build -o detector .
+_______________________
+
+# Comprobar si existe gcc o clang en el PATH
+command -v gcc && echo "gcc: instalado" || echo "gcc: NO instalado"
+command -v clang && echo "clang: instalado" || echo "clang: NO instalado"
+
+# Ver la versión de cada uno
+gcc --version
+clang --version
+
+# Verificar que el compilador realmente funciona (compila un programa de prueba)
+printf '#include <stdio.h>\nint main(void){puts("ok");return 0;}\n' > /tmp/test_cc.c
+gcc /tmp/test_cc.c -o /tmp/test_cc_gcc && /tmp/test_cc_gcc
+clang /tmp/test_cc.c -o /tmp/test_cc_clang && /tmp/test_cc_clang
+
+# Ver qué compilador usa por defecto el sistema (cc suele apuntar a gcc o clang)
+command -v cc && cc --version
+
+# Ver la ruta real del binario y, si está, su paquete
+readlink -f "$(command -v gcc)" 2>/dev/null
+dpkg -s gcc 2>/dev/null | grep -E '^(Package|Version|Status)'   # Debian/Ubuntu
+rpm -q gcc 2>/dev/null                                           # Fedora/RHEL
+
+# Limpieza de los archivos de prueba
+rm -f /tmp/test_cc.c /tmp/test_cc_gcc /tmp/test_cc_clang
